@@ -1,0 +1,13 @@
+build/
+build-*/
+*.csv
+*.nsys-rep
+*.ncu-rep
+*.ncu-repz
+*.log
+
+# Local builds, full experiment workspaces and their backups may contain
+# machine-specific paths or large binaries. Curated evidence is under docs.
+/validation/
+/MANIFEST.sha256
+!docs/evidence/**/*.csv

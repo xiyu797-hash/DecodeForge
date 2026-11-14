@@ -1,0 +1,30 @@
+name: CPU reference and verification
+on:
+  push:
+  pull_request:
+jobs:
+  cpu:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: >-
+          cmake -S . -B build/ci
+          -DDF_ENABLE_CUDA=OFF
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_CXX_COMPILER=${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}
+      - name: Build
+        run: cmake --build build/ci -j 2
+      - name: Test
+        run: ctest --test-dir build/ci --output-on-failure
+  sanitizer:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: ASan and UBSan
+        run: bash scripts/verify_cpu_sanitizers.sh
+# NOTE: This workflow never claims GPU validation. CUDA tests require a real GPU runner.
